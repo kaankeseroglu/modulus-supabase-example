@@ -17,7 +17,7 @@ I’m comfortable with the exact pieces in scope:
 
 For a relevant Supabase example, I prepared a small ROS-focused proof-of-work that mirrors this project’s backend requirements: Auth + RLS, creator/co-owner access, token-based crew snapshot, asset metadata/storage pattern, and a Twilio/Resend notification function.
 
-Demo repo: [paste GitHub repo link here]
+Demo repo: https://github.com/kaankeseroglu/modulus-supabase-example
 
 My implementation approach would be:
 
