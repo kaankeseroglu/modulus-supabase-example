@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Modulus Supabase Integration Demo</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23080a10'/%3E%3Cpath d='M16 46V18h8l8 13 8-13h8v28h-8V31L33 42h-2l-7-11v15h-8z' fill='%2371f2c7'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">Supabase proof-of-work</p>
+        <h1>Modulus ROS backend integration demo</h1>
+        <p>
+          A compact single-page client showing Auth, Postgres RLS, token-based crew view,
+          Storage signed URLs, and a Twilio/Resend notification function.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 1</span>
+            <h2>Connect Supabase</h2>
+            <p>Paste the hosted project credentials used by this static demo client.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>
+            Supabase URL
+            <input id="supabase-url" placeholder="https://YOUR_PROJECT.supabase.co" />
+          </label>
+          <label>
+            Anon key
+            <input id="supabase-anon-key" placeholder="eyJ..." />
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="save-config">Save config</button>
+        </div>
+        <p id="config-status" class="status"></p>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 2</span>
+            <h2>Creator / Co-owner Login</h2>
+            <p>Use Supabase Auth for the owner and collaborator workflow.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>
+            Email
+            <input id="email" type="email" placeholder="producer@example.com" />
+          </label>
+          <label>
+            Password
+            <input id="password" type="password" placeholder="At least 6 chars" />
+          </label>
+        </div>
+        <div class="form-actions split-actions">
+          <div class="button-row">
+            <button id="sign-up">Sign up</button>
+            <button id="sign-in">Sign in</button>
+          </div>
+          <button id="sign-out" class="secondary">Sign out</button>
+        </div>
+        <p id="auth-status" class="status"></p>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 3</span>
+            <h2>Production</h2>
+            <p>Create or select the show that scopes ROS items, contacts, assets, and notifications.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>
+            Production title
+            <input id="production-title" value="Opening Night Gala" />
+          </label>
+          <label>
+            Event date
+            <input id="event-date" type="date" />
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="create-production">Create production</button>
+          <button id="reload-productions" class="secondary">Reload</button>
+        </div>
+        <div id="productions" class="list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 4</span>
+            <h2>ROS Items</h2>
+            <p>Add cue rows that are persisted in Supabase instead of browser storage.</p>
+          </div>
+        </div>
+        <div class="grid three">
+          <label>
+            Timecode
+            <input id="ros-timecode" value="00:05:00" />
+          </label>
+          <label>
+            Cue
+            <input id="ros-cue" value="House lights to half" />
+          </label>
+          <label>
+            Department
+            <input id="ros-department" value="Lighting" />
+          </label>
+          <label>
+            Owner
+            <input id="ros-owner" value="Show Caller" />
+          </label>
+          <label>
+            Segment
+            <input id="ros-segment" value="Preshow" />
+          </label>
+          <label class="checkbox">
+            <input id="ros-private" type="checkbox" />
+            Private, hidden from crew link
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="add-ros-item">Add ROS item</button>
+        </div>
+        <div id="ros-items" class="list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 5</span>
+            <h2>Contacts</h2>
+            <p>Store crew contacts with department tags and visibility controls.</p>
+          </div>
+        </div>
+        <div class="grid three">
+          <label>
+            Name
+            <input id="contact-name" value="Alex Rivera" />
+          </label>
+          <label>
+            Role
+            <input id="contact-role" value="Stage Manager" />
+          </label>
+          <label>
+            Department tags
+            <input id="contact-departments" value="Stage, Production" />
+          </label>
+          <label>
+            Email
+            <input id="contact-email" type="email" value="alex@example.com" />
+          </label>
+          <label>
+            Phone
+            <input id="contact-phone" value="+15555555555" />
+          </label>
+          <label class="checkbox">
+            <input id="contact-private" type="checkbox" />
+            Private, hidden from crew link
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="add-contact">Add contact</button>
+        </div>
+        <div id="contacts" class="list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 6</span>
+            <h2>Show Assets</h2>
+            <p>Upload private files to Supabase Storage and fetch short-lived signed URLs.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <label>
+            Upload file
+            <input id="asset-file" type="file" />
+          </label>
+          <label class="checkbox">
+            <input id="asset-crew-visible" type="checkbox" />
+            Crew can see metadata
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="upload-asset">Upload asset</button>
+        </div>
+        <div id="assets" class="list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 7</span>
+            <h2>Crew Read-only Link</h2>
+            <p>Generate a share token and load the sanitized, no-login crew payload.</p>
+          </div>
+        </div>
+        <label>
+          Crew token
+          <input id="crew-token" placeholder="Token appears here or paste one" />
+        </label>
+        <div class="form-actions">
+          <button id="create-crew-token">Create crew token</button>
+          <button id="load-crew-view" class="secondary">Load crew snapshot</button>
+        </div>
+        <pre id="crew-view" class="output"></pre>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <span class="step">Step 8</span>
+            <h2>Notification Function</h2>
+            <p>Invoke the Supabase Edge Function that can fan out through Resend and Twilio.</p>
+          </div>
+        </div>
+        <label>
+          Subject
+          <input id="notification-subject" value="Updated show schedule" />
+        </label>
+        <label>
+          Message
+          <textarea id="notification-body">Please review the latest run-of-show update.</textarea>
+        </label>
+        <div class="button-row">
+          <label class="checkbox">
+            <input id="notify-email" type="checkbox" checked />
+            Email via Resend
+          </label>
+          <label class="checkbox">
+            <input id="notify-sms" type="checkbox" />
+            SMS via Twilio
+          </label>
+        </div>
+        <div class="form-actions">
+          <button id="send-notification">Send notification</button>
+        </div>
+        <pre id="notification-result" class="output"></pre>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
